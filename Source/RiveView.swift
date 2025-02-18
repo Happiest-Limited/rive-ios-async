@@ -389,7 +389,7 @@ open class RiveView: RiveRendererView {
         playerDelegate?.player(didAdvanceby: delta, riveModel: riveModel)
         
         // Trigger a redraw
-        needsDisplay()
+        // needsDisplay()
     }
     /// This is called in the middle of drawRect. Override this method to implement
     /// custom draw logic
