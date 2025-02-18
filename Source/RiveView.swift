@@ -316,28 +316,28 @@ open class RiveView: RiveRendererView {
             return
         }
         
-        let timestamp = timestamp()
-        // last time needs to be set on the first tick
+        let timestampNow = timestamp()
         if lastTime == 0 {
-            lastTime = timestamp
+            lastTime = timestampNow
         }
         
-        // Calculate the time elapsed between ticks
-        let elapsedTime = timestamp - lastTime
+        let elapsedTime = timestampNow - lastTime
+        lastTime = timestampNow
         
-        #if os(iOS) || os(visionOS) || os(tvOS)
-            fpsCounter?.didDrawFrame(timestamp: timestamp)
-        #else
-            fpsCounter?.elapsed(time: elapsedTime)
-        #endif
-            
+        // Offload the heavy animation advancement to a background queue.
+        DispatchQueue.global(qos: .userInteractive).async {
+            self.advance(delta: elapsedTime)
+            // Once the model has advanced, schedule a redraw on the main thread.
+            DispatchQueue.main.async {
+                self.needsDisplay()
+            }
+        }
         
-        lastTime = timestamp
-        advance(delta: elapsedTime)
         if !isPlaying {
             stopTimer()
         }
     }
+
     
     /// Advances the Artboard and either a StateMachine or an Animation.
     /// Also fires any remaining events in the queue.
