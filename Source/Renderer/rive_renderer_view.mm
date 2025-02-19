@@ -208,6 +208,8 @@
     [self setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
     [self setFramebufferOnly:_renderContext.framebufferOnly];
     [self setSampleCount:1];
+    [self setDisplaySyncEnabled:NO];
+
 
     return self;
 }
